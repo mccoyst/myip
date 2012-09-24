@@ -8,19 +8,15 @@ import (
 )
 
 func main() {
-	name, err := os.Hostname()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Oops: %v\n", err)
-		os.Exit(1)
-	}
-
-	addrs, err := net.LookupHost(name)
+	addrs, err := net.InterfaceAddrs()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Oops: %v\n", err)
 		os.Exit(1)
 	}
 
 	for _, a := range addrs {
-		fmt.Println(a)
+		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
+			fmt.Println(ipnet.IP)
+		}
 	}
 }

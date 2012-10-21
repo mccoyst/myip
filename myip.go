@@ -1,4 +1,9 @@
 // © 2012 Steve McCoy. Licensed under the MIT license.
+
+/*
+The myip command prints all non-loopback IP addresses associated
+with the machine that it runs on.
+*/
 package main
 
 import (

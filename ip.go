@@ -1,16 +1,12 @@
-// © 2012 Steve McCoy. Licensed under the MIT license.
-
-/*
-The myip command prints all non-loopback IP addresses associated
-with the machine that it runs on, one per line.
-*/
 package main
 
 import (
 	"net"
+    "net/http"
+    "strings"
 )
 
-func GetLocalIp() ([]string, error) {
+func LocalIp() ([]string, error) {
 	var ips []string
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
@@ -25,8 +21,25 @@ func GetLocalIp() ([]string, error) {
 	return ips, nil
 }
 
+func RemoteIp(r *http.Request) string {
+    if r == nil {
+        return ""
+    }
+
+    realIp := r.Header.Get("X-Forwarded-For")
+    if realIp != "" {
+        return strings.SplitN(realIp, ",", 2)[0]
+    }
+
+    realIp = r.Header.Get("X-Real-IP")
+    if realIp != "" {
+        return realIp
+    }
+    return strings.SplitN(r.RemoteAddr, ":", 2)[0]
+}
+
 func main() {
-	ips, err := GetLocalIp()
+	ips, err := LocalIp()
 	if err != nil {
 		println(err)
 		return

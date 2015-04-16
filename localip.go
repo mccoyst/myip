@@ -8,19 +8,31 @@ package main
 
 import (
 	"net"
-	"os"
 )
 
-func main() {
+func GetLocalIp() ([]string, error) {
+	var ips []string
 	addrs, err := net.InterfaceAddrs()
 	if err != nil {
-		os.Stderr.WriteString("Oops: " + err.Error() + "\n")
-		os.Exit(1)
+		return ips, err
 	}
 
-	for _, a := range addrs {
-		if ipnet, ok := a.(*net.IPNet); ok && !ipnet.IP.IsLoopback() {
-			os.Stdout.WriteString(ipnet.IP.String() + "\n")
+	for _, addr := range addrs {
+		if ip, ok := addr.(*net.IPNet); ok && !ip.IP.IsLoopback() {
+			ips = append(ips, ip.IP.String())
 		}
+	}
+	return ips, nil
+}
+
+func main() {
+	ips, err := GetLocalIp()
+	if err != nil {
+		println(err)
+		return
+	}
+
+	for ip := range ips {
+		println(ip)
 	}
 }

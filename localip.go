@@ -32,7 +32,7 @@ func main() {
 		return
 	}
 
-	for ip := range ips {
+	for _, ip := range ips {
 		println(ip)
 	}
 }
